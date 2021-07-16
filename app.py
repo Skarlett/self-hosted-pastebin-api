@@ -59,8 +59,6 @@ async def setup(webapp, port, interface):
 def main(serve="/tmp/pastes", log=None, port=8080, interface="0.0.0.0"):
   global PATH
   PATH=serve
-  
-  logging
 
   if log:
     log_args = {'filename': log, 'level': logging.INFO, 'filemode': 'a'}
