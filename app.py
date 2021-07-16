@@ -6,7 +6,6 @@ import string
 import logging
 from aiohttp import web
 
-HOST = "http://pastes.lan"
 PATH = '/tmp/serve'
 
 routes = web.RouteTableDef()
@@ -56,9 +55,14 @@ async def setup(webapp, port, interface):
   site = web.TCPSite(runner, host=interface, port=port, reuse_address=True)
   await site.start()
 
-def main(serve="/tmp/pastes", log=None, port=8080, interface="0.0.0.0"):
-  global PATH
+def main(serve="/tmp/pastes", port=8080, interface="0.0.0.0", log=None, host=None):
+  global PATH, HOST
   PATH=serve
+  
+  if host:
+    HOST=host
+  else:
+    HOST=interface
 
   if log:
     log_args = {'filename': log, 'level': logging.INFO, 'filemode': 'a'}
@@ -74,12 +78,10 @@ def main(serve="/tmp/pastes", log=None, port=8080, interface="0.0.0.0"):
     os.makedirs(PATH, exist_ok=True)
 
   loop = asyncio.get_event_loop()
-
   loop.create_task(setup(app, interface=interface, port=port))
 
-  #loop.run_until_complete(loop.create_server())
   print(f"Running webserver API at http://{interface}:{port} [{serve}]")
-  
+
   try:
     loop.run_forever()
   except KeyboardInterrupt:
